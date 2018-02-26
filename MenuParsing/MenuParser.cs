@@ -1,4 +1,5 @@
 ﻿using MenuParsing.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
@@ -7,11 +8,24 @@ namespace MenuParsing
 {
     internal static class MenuParser
     {
-        public static Menu ParseFromFile(string path) =>
-            ParseFromXml(File.ReadAllText(path));
+        public static Menu ParseFromFile(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException("path cannot be null or empty");
 
-        public static Menu ParseFromXml(string contents) =>
-            new Menu(ParseFromElement(XElement.Parse(contents)));
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"Path: {path} does not exist.");
+
+            return ParseFromXml(File.ReadAllText(path));
+        }
+
+        public static Menu ParseFromXml(string contents)
+        {
+            if (string.IsNullOrWhiteSpace(contents))
+                throw new ArgumentException("contents cannot be null or empty");
+
+            return new Menu(ParseFromElement(XElement.Parse(contents)));
+        }
 
         private static IEnumerable<MenuItem> ParseFromElement(XElement node)
         {

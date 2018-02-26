@@ -6,19 +6,19 @@ namespace MenuParsing.Data
 {
     internal class Menu
     {
-        private IEnumerable<MenuItem> items;
+        internal IEnumerable<MenuItem> Items { get; }
 
         public Menu(IEnumerable<MenuItem> items)
         {
-            this.items = items;
+            Items = items;
         }
 
         public void SetActive(string path)
         {
-            if (items.IsNullOrEmpty())
+            if (Items.IsNullOrEmpty())
                 return;
 
-            foreach (var menuItem in items)
+            foreach (var menuItem in Items)
                 SetActiveInternal(menuItem, path);
         }
 
@@ -30,6 +30,7 @@ namespace MenuParsing.Data
             // A menu item is active if:
             // 1) It's own path is equal to the given path
             // 2) One of it's children is
+            // Right now this is case-sensitive, but it may not have to be
             if (string.Equals(menuItem.Path, path) || (recurseChildren && menuItem.SubMenu.Any(mi => SetActiveInternal(mi, path))))
                 menuItem.IsActive = true;
 
@@ -40,7 +41,7 @@ namespace MenuParsing.Data
         {
             var sb = new StringBuilder();
 
-            foreach (var menuItem in items)
+            foreach (var menuItem in Items)
                 sb.Append(ToStringInternal(menuItem, 0));
 
             return sb.ToString();
